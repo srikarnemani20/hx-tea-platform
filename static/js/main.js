@@ -236,9 +236,12 @@ function runTEA() {
     working_capital_pct: parseFloat(document.getElementById("working_capital_pct").value)
   };
 
-  // Basic validation
+  // Validate required text and numeric fields without treating text as a number.
   for (const [key, val] of Object.entries(inputs)) {
-    if (val === "" || val === null || isNaN(val)) {
+    const isMissingText = typeof val === "string" && val.trim() === "";
+    const isInvalidNumber = typeof val === "number" && !Number.isFinite(val);
+
+    if (val === null || val === undefined || isMissingText || isInvalidNumber) {
       errDiv.textContent = `Missing or invalid value: ${key.replace('_', ' ')}`;
       errDiv.style.display = "block";
       return;
