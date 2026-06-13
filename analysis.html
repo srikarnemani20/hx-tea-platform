@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TEA Input — HX-TEA Platform</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <link rel="stylesheet" href="static/css/style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
 </head>
@@ -13,9 +13,9 @@
 <nav class="nav">
   <div class="nav-brand"><span class="dot"></span>HX-TEA Platform</div>
   <div class="nav-links">
-    <a href="/">Home</a>
-    <a href="/analysis" class="active">Analysis</a>
-    <a href="/results">Results</a>
+    <a href="index.html">Home</a>
+    <a href="analysis.html" class="active">Analysis</a>
+    <a href="results.html">Results</a>
   </div>
 </nav>
 
@@ -217,8 +217,8 @@
           <tr><td>Annual Savings</td><td>Annual Energy × Utility Cost</td></tr>
           <tr><td>Maintenance</td><td>TCI × Maintenance %</td></tr>
           <tr><td>Net Annual Benefit</td><td>Annual Savings − Maintenance</td></tr>
-          <tr><td>NPV</td><td>numpy-financial npv(rate, cashflows)</td></tr>
-          <tr><td>IRR</td><td>numpy-financial irr(cashflows)</td></tr>
+          <tr><td>NPV</td><td>Discounted cash flow NPV</td></tr>
+          <tr><td>IRR</td><td>Discounted cash flow IRR</td></tr>
           <tr><td>Simple Payback</td><td>TCI / Net Annual Benefit</td></tr>
         </tbody>
       </table>
@@ -226,6 +226,6 @@
   </main>
 </div>
 
-<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script src="static/js/main.js"></script>
 </body>
 </html>

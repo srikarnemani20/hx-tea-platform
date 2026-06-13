@@ -1,10 +1,101 @@
 // static/js/results.js
-// Plotly chart rendering for the TEA results page
+// Read data from localStorage and render KPIs and Plotly charts client-side
 
 (function () {
-  if (typeof CF_DATA === "undefined") return;
+  const emptyState = document.getElementById("emptyState");
+  const resultsPage = document.getElementById("resultsPage");
 
-  const { years, cashflows, cumulative } = CF_DATA;
+  // Read results from localStorage
+  const resultsStr = localStorage.getItem("tea_results");
+  if (!resultsStr) {
+    if (emptyState) emptyState.style.display = "flex";
+    if (resultsPage) resultsPage.style.display = "none";
+    return;
+  }
+
+  // Parse results
+  const results = JSON.parse(resultsStr);
+  if (emptyState) emptyState.style.display = "none";
+  if (resultsPage) resultsPage.style.display = "block";
+
+  // Helper: Format to currency
+  function fmt(n) {
+    if (n === null || isNaN(n) || typeof n === "undefined") return "—";
+    const sign = n < 0 ? "-" : "";
+    return sign + "$" + Math.abs(n).toLocaleString("en-US", { maximumFractionDigits: 0 });
+  }
+
+  // Helper: Format to simple currency string
+  function fmtTbl(n) {
+    return fmt(n);
+  }
+
+  // ── 1. Populate Header & Badges ─────────────────────────────────────
+  document.getElementById("res_hx_type").textContent = results.inputs.hx_type;
+  document.getElementById("res_material").textContent = results.inputs.material;
+  document.getElementById("res_plant_life").textContent = results.inputs.plant_life + " years";
+  document.getElementById("res_operating_hours").textContent = results.inputs.operating_hours.toLocaleString("en-US", { maximumFractionDigits: 0 }) + " hr/yr";
+
+  const badgesContainer = document.getElementById("res_badges");
+  badgesContainer.innerHTML = ""; // Clear placeholders
+
+  // NPV Badge
+  if (results.economics.npv > 0) {
+    badgesContainer.innerHTML += `<span class="badge badge-success">✓ NPV Positive</span>`;
+  } else {
+    badgesContainer.innerHTML += `<span class="badge badge-danger">✗ NPV Negative</span>`;
+  }
+
+  // IRR Badge
+  if (results.economics.irr !== null) {
+    if (results.economics.irr > results.inputs.discount_rate_pct) {
+      badgesContainer.innerHTML += `<span class="badge badge-success">IRR &gt; Hurdle Rate</span>`;
+    } else {
+      badgesContainer.innerHTML += `<span class="badge badge-warning">IRR &lt; Hurdle Rate</span>`;
+    }
+  }
+
+  // ── 2. Populate KPI Cards ──────────────────────────────────────────
+  document.getElementById("kpi_purchase_cost").textContent = fmt(results.capex.purchase_cost);
+  document.getElementById("kpi_bare_module_cost").textContent = fmt(results.capex.bare_module_cost);
+  document.getElementById("res_bmf_factor").textContent = results.capex.bare_module_factor.toFixed(3);
+  document.getElementById("kpi_fci").textContent = fmt(results.capex.fci);
+  document.getElementById("kpi_tci").textContent = fmt(results.capex.tci);
+  document.getElementById("kpi_annual_energy").textContent = results.opex.annual_energy_kwh.toLocaleString("en-US", { maximumFractionDigits: 0 });
+  document.getElementById("kpi_annual_savings").textContent = fmt(results.opex.annual_savings);
+  document.getElementById("kpi_annual_maintenance").textContent = fmt(results.opex.maintenance_cost);
+  
+  const netBenefitEl = document.getElementById("kpi_net_annual_benefit");
+  netBenefitEl.textContent = fmt(results.opex.net_annual_benefit);
+  netBenefitEl.className = "kpi-value " + (results.opex.net_annual_benefit >= 0 ? "positive" : "negative");
+
+  const npvEl = document.getElementById("kpi_npv");
+  npvEl.textContent = fmt(results.economics.npv);
+  npvEl.className = "kpi-value " + (results.economics.npv >= 0 ? "positive" : "negative");
+  document.getElementById("res_discount_rate").textContent = results.inputs.discount_rate_pct;
+
+  document.getElementById("kpi_irr").textContent = results.economics.irr !== null ? results.economics.irr.toFixed(1) + "%" : "N/A";
+  document.getElementById("kpi_payback_period").textContent = results.economics.payback_period !== null ? results.economics.payback_period.toFixed(1) + " yr" : "N/A";
+
+  // ── 3. Populate Summary Tables ──────────────────────────────────────
+  document.getElementById("tbl_purchase_cost").textContent = fmtTbl(results.capex.purchase_cost);
+  document.getElementById("tbl_bmf_factor").textContent = results.capex.bare_module_factor.toFixed(3);
+  document.getElementById("tbl_bare_module_cost").textContent = fmtTbl(results.capex.bare_module_cost);
+  document.getElementById("tbl_contingency_cost").textContent = fmtTbl(results.capex.contingency_cost);
+  document.getElementById("tbl_fci").textContent = fmtTbl(results.capex.fci);
+  document.getElementById("tbl_working_capital").textContent = fmtTbl(results.capex.working_capital);
+  document.getElementById("tbl_tci").textContent = fmtTbl(results.capex.tci);
+
+  document.getElementById("tbl_annual_energy").textContent = results.opex.annual_energy_kwh.toLocaleString("en-US", { maximumFractionDigits: 0 }) + " kWh/yr";
+  document.getElementById("tbl_annual_savings").textContent = fmtTbl(results.opex.annual_savings) + "/yr";
+  document.getElementById("tbl_annual_maintenance").textContent = fmtTbl(results.opex.maintenance_cost) + "/yr";
+  document.getElementById("tbl_net_annual_benefit").textContent = fmtTbl(results.opex.net_annual_benefit) + "/yr";
+  document.getElementById("tbl_npv").textContent = fmtTbl(results.economics.npv);
+  document.getElementById("tbl_irr").textContent = results.economics.irr !== null ? results.economics.irr.toFixed(2) + "%" : "N/A";
+  document.getElementById("tbl_payback_period").textContent = results.economics.payback_period !== null ? results.economics.payback_period.toFixed(2) + " years" : "N/A";
+
+  // ── 4. Render Charts ────────────────────────────────────────────────
+  const { years, cashflows, cumulative } = results.cashflow;
 
   const AMBER  = "#f0a500";
   const TEAL   = "#2dd4bf";
@@ -78,10 +169,6 @@
       break;
     }
   }
-
-  const posColors = cumulative.map(v =>
-    v >= 0 ? "rgba(45,212,191,0.15)" : "rgba(248,81,73,0.1)"
-  );
 
   const shapes = [
     {

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TEA Results — HX-TEA Platform</title>
+  <link rel="stylesheet" href="static/css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-brand"><span class="dot"></span>HX-TEA Platform</div>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="analysis.html">Analysis</a>
+    <a href="results.html" class="active">Results</a>
+  </div>
+</nav>
+
+<!-- Empty State Container -->
+<div class="empty-state" id="emptyState" style="display: none;">
+  <div class="empty-icon">📊</div>
+  <h2>No analysis results yet</h2>
+  <p>Run a TEA analysis to see your results here.</p>
+  <br />
+  <a href="analysis.html" class="btn btn-primary">Go to Analysis</a>
+</div>
+
+<!-- Results Page Container -->
+<div class="results-page fade-in" id="resultsPage" style="display: none;">
+
+  <div class="results-header">
+    <div>
+      <h1>TEA Results — <span id="res_hx_type"></span></h1>
+      <p>
+        Material: <strong id="res_material"></strong> &nbsp;·&nbsp;
+        Plant Life: <strong id="res_plant_life"></strong> &nbsp;·&nbsp;
+        Operating: <strong id="res_operating_hours"></strong>
+      </p>
+    </div>
+    <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:flex-start;">
+      <div id="res_badges" style="display:flex; gap:0.5rem; flex-wrap:wrap;"></div>
+      <a href="analysis.html" class="btn btn-outline">← New Analysis</a>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="kpi-grid">
+
+    <div class="kpi-card">
+      <div class="kpi-label">Purchase Cost</div>
+      <div class="kpi-value" id="kpi_purchase_cost">$0</div>
+      <div class="kpi-sub">Equipment purchase price</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-label">Bare Module Cost</div>
+      <div class="kpi-value" id="kpi_bare_module_cost">$0</div>
+      <div class="kpi-sub">× <span id="res_bmf_factor">3.291</span> bare module factor</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-label">Fixed Capital Investment</div>
+      <div class="kpi-value" id="kpi_fci">$0</div>
+      <div class="kpi-sub">BMC + Contingency</div>
+    </div>
+
+    <div class="kpi-card highlight">
+      <div class="kpi-label">Total Capital Investment</div>
+      <div class="kpi-value accent" id="kpi_tci">$0</div>
+      <div class="kpi-sub">FCI + Working Capital</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-label">Annual Energy Recovered</div>
+      <div class="kpi-value" id="kpi_annual_energy">0</div>
+      <div class="kpi-sub">kWh / year</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-label">Annual Savings</div>
+      <div class="kpi-value positive" id="kpi_annual_savings">$0</div>
+      <div class="kpi-sub">Energy cost recovered</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-label">Annual Maintenance</div>
+      <div class="kpi-value negative" id="kpi_annual_maintenance">$0</div>
+      <div class="kpi-sub">% of TCI per year</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-label">Net Annual Benefit</div>
+      <div class="kpi-value" id="kpi_net_annual_benefit">$0</div>
+      <div class="kpi-sub">Savings − Maintenance</div>
+    </div>
+
+    <div class="kpi-card highlight">
+      <div class="kpi-label">Net Present Value</div>
+      <div class="kpi-value" id="kpi_npv">$0</div>
+      <div class="kpi-sub">At <span id="res_discount_rate">0</span>% discount rate</div>
+    </div>
+
+    <div class="kpi-card highlight">
+      <div class="kpi-label">Internal Rate of Return</div>
+      <div class="kpi-value accent" id="kpi_irr">0%</div>
+      <div class="kpi-sub">Project IRR</div>
+    </div>
+
+    <div class="kpi-card highlight">
+      <div class="kpi-label">Simple Payback Period</div>
+      <div class="kpi-value accent" id="kpi_payback_period">0 yr</div>
+      <div class="kpi-sub">TCI / Net Annual Benefit</div>
+    </div>
+
+  </div>
+
+  <!-- Charts -->
+  <div class="charts-grid">
+    <div class="chart-card">
+      <h3>Annual Cash Flow</h3>
+      <div class="chart-container" id="chartCashflow"></div>
+    </div>
+    <div class="chart-card">
+      <h3>Cumulative Cash Flow</h3>
+      <div class="chart-container" id="chartCumulative"></div>
+    </div>
+  </div>
+
+  <!-- Summary Tables -->
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:2rem;">
+
+    <div class="summary-section">
+      <h3>CAPEX Breakdown</h3>
+      <table class="data-table">
+        <thead><tr><th>Item</th><th>Value (USD)</th></tr></thead>
+        <tbody>
+          <tr><td>Purchase Cost</td><td id="tbl_purchase_cost">$0</td></tr>
+          <tr><td>Bare Module Factor</td><td id="tbl_bmf_factor">3.291</td></tr>
+          <tr><td>Bare Module Cost</td><td id="tbl_bare_module_cost">$0</td></tr>
+          <tr><td>Contingency</td><td id="tbl_contingency_cost">$0</td></tr>
+          <tr><td>Fixed Capital Investment</td><td id="tbl_fci">$0</td></tr>
+          <tr><td>Working Capital</td><td id="tbl_working_capital">$0</td></tr>
+          <tr><td><strong>Total Capital Investment</strong></td><td><strong id="tbl_tci">$0</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="summary-section">
+      <h3>OPEX & Economics</h3>
+      <table class="data-table">
+        <thead><tr><th>Item</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Annual Energy Recovered</td><td id="tbl_annual_energy">0 kWh/yr</td></tr>
+          <tr><td>Annual Savings</td><td id="tbl_annual_savings">$0/yr</td></tr>
+          <tr><td>Annual Maintenance</td><td id="tbl_annual_maintenance">$0/yr</td></tr>
+          <tr><td>Net Annual Benefit</td><td id="tbl_net_annual_benefit">$0/yr</td></tr>
+          <tr><td>NPV</td><td id="tbl_npv">$0</td></tr>
+          <tr><td>IRR</td><td id="tbl_irr">0%</td></tr>
+          <tr><td>Simple Payback</td><td id="tbl_payback_period">0 years</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script src="static/js/results.js"></script>
+</body>
+</html>
