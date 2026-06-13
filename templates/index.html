@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Heat Exchanger TEA Platform</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-brand">
+    <span class="dot"></span>
+    HX-TEA Platform
+  </div>
+  <div class="nav-links">
+    <a href="/" class="active">Home</a>
+    <a href="/analysis">Analysis</a>
+    <a href="/results">Results</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-tag">Techno-Economic Analysis</div>
+
+  <h1>Heat Exchanger<br /><span>TEA Platform</span></h1>
+
+  <p>
+    Evaluate capital costs, operating expenses, and financial returns for
+    Shell &amp; Tube, Plate, Double Pipe, and Air Cooler heat exchangers —
+    built for process and chemical engineers.
+  </p>
+
+  <div class="hero-cta">
+    <a href="/analysis" class="btn btn-primary btn-lg">
+      ⚡ Start Analysis
+    </a>
+    <a href="#about" class="btn btn-outline btn-lg">
+      Learn More
+    </a>
+  </div>
+</section>
+
+<div class="features" id="about">
+  <div class="feat-card fade-in">
+    <span class="feat-icon">⚙️</span>
+    <h3>4 HX Types</h3>
+    <p>Shell &amp; Tube, Plate, Double Pipe, and Air Cooler with material selection.</p>
+  </div>
+  <div class="feat-card fade-in" style="animation-delay:0.1s">
+    <span class="feat-icon">💰</span>
+    <h3>Full CAPEX / OPEX</h3>
+    <p>Bare module costing, FCI, TCI, annual energy savings, and maintenance.</p>
+  </div>
+  <div class="feat-card fade-in" style="animation-delay:0.2s">
+    <span class="feat-icon">📈</span>
+    <h3>NPV · IRR · Payback</h3>
+    <p>Complete discounted cash flow analysis with interactive charts.</p>
+  </div>
+  <div class="feat-card fade-in" style="animation-delay:0.3s">
+    <span class="feat-icon">🔢</span>
+    <h3>Unit Conversion</h3>
+    <p>Automatic conversion across SI / imperial units — input in any system.</p>
+  </div>
+</div>
+
+<br /><br />
+
+</body>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TEA Input — HX-TEA Platform</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-brand"><span class="dot"></span>HX-TEA Platform</div>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/analysis" class="active">Analysis</a>
+    <a href="/results">Results</a>
+  </div>
+</nav>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text">Running TEA Engine…</div>
+</div>
+
+<div class="page-layout">
+
+  <!-- ── SIDEBAR (Input Form) ────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="sidebar-title">Input Parameters</div>
+
+    <!-- Section A: Technical -->
+    <div class="form-section">
+      <div class="section-header">
+        <span class="section-label">A</span>
+        <span class="section-title">Technical Inputs</span>
+      </div>
+
+      <div class="field">
+        <label>Heat Exchanger Type</label>
+        <select id="hx_type" onchange="updatePreview()">
+          <option value="Shell and Tube">Shell and Tube</option>
+          <option value="Plate Heat Exchanger">Plate Heat Exchanger</option>
+          <option value="Double Pipe">Double Pipe</option>
+          <option value="Air Cooler">Air Cooler</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Heat Duty</label>
+        <div class="field-row">
+          <input type="number" id="heat_duty" placeholder="e.g. 500" value="500" min="0" onchange="updatePreview()" />
+          <select id="heat_duty_unit" class="unit-select" onchange="updatePreview()">
+            <option value="kW">kW</option>
+            <option value="W">W</option>
+            <option value="MW">MW</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Heat Transfer Area</label>
+        <div class="field-row">
+          <input type="number" id="area" placeholder="e.g. 50" value="50" min="0" onchange="updatePreview()" />
+          <select id="area_unit" class="unit-select" onchange="updatePreview()">
+            <option value="m²">m²</option>
+            <option value="ft²">ft²</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Design Pressure</label>
+        <div class="field-row">
+          <input type="number" id="pressure" placeholder="e.g. 10" value="10" min="0" onchange="updatePreview()" />
+          <select id="pressure_unit" class="unit-select" onchange="updatePreview()">
+            <option value="bar">bar</option>
+            <option value="psi">psi</option>
+            <option value="kPa">kPa</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Design Temperature</label>
+        <div class="field-row">
+          <input type="number" id="temperature" placeholder="e.g. 250" value="250" min="0" onchange="updatePreview()" />
+          <select id="temperature_unit" class="unit-select" onchange="updatePreview()">
+            <option value="°C">°C</option>
+            <option value="°F">°F</option>
+            <option value="K">K</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Material</label>
+        <select id="material" onchange="updatePreview()">
+          <option value="Carbon Steel">Carbon Steel</option>
+          <option value="SS304">SS 304</option>
+          <option value="SS316">SS 316</option>
+          <option value="Titanium">Titanium</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Section B: Economic -->
+    <div class="form-section">
+      <div class="section-header">
+        <span class="section-label">B</span>
+        <span class="section-title">Economic Inputs</span>
+      </div>
+
+      <div class="field">
+        <label>Purchase Cost (USD)</label>
+        <input type="number" id="purchase_cost" placeholder="e.g. 250000" value="250000" min="0" onchange="updatePreview()" />
+      </div>
+
+      <div class="field">
+        <label>Plant Life (years)</label>
+        <input type="number" id="plant_life" placeholder="e.g. 20" value="20" min="1" max="50" onchange="updatePreview()" />
+      </div>
+
+      <div class="field">
+        <label>Operating Hours / Year</label>
+        <input type="number" id="operating_hours" placeholder="e.g. 8000" value="8000" min="0" max="8760" onchange="updatePreview()" />
+      </div>
+
+      <div class="field">
+        <label>Utility Cost ($/kWh)</label>
+        <input type="number" id="utility_cost" placeholder="e.g. 0.08" value="0.08" min="0" step="0.001" onchange="updatePreview()" />
+      </div>
+
+      <div class="field">
+        <label>Discount Rate (%)</label>
+        <input type="number" id="discount_rate" placeholder="e.g. 10" value="10" min="0" max="100" step="0.1" onchange="updatePreview()" />
+      </div>
+
+      <div class="field">
+        <label>Maintenance (% of TCI)</label>
+        <input type="number" id="maintenance_pct" placeholder="e.g. 3" value="3" min="0" max="100" step="0.1" onchange="updatePreview()" />
+      </div>
+
+      <div class="field">
+        <label>Contingency (% of Bare Module)</label>
+        <input type="number" id="contingency_pct" placeholder="e.g. 15" value="15" min="0" max="100" step="0.1" onchange="updatePreview()" />
+      </div>
+
+      <div class="field">
+        <label>Working Capital (% of FCI)</label>
+        <input type="number" id="working_capital_pct" placeholder="e.g. 5" value="5" min="0" max="100" step="0.1" onchange="updatePreview()" />
+      </div>
+    </div>
+
+    <button class="btn-run" id="runBtn" onclick="runTEA()">
+      ⚡ Run TEA Analysis
+    </button>
+
+    <div id="errorMsg" style="display:none; color:var(--red-neg); font-size:12px; margin-top:0.75rem; padding:0.6rem; background:rgba(248,81,73,0.1); border-radius:4px; border:1px solid rgba(248,81,73,0.2);"></div>
+  </aside>
+
+  <!-- ── MAIN CONTENT ─────────────────────────────────────────── -->
+  <main class="main-content">
+    <div class="content-header">
+      <h2>TEA Configuration</h2>
+      <p>Fill in all parameters and click <strong>Run TEA Analysis</strong> to compute CAPEX, OPEX, and project economics.</p>
+    </div>
+
+    <!-- Live Preview Panel -->
+    <div class="preview-panel">
+      <h3>Live Preview — Estimated Values</h3>
+      <div class="preview-grid" id="previewGrid">
+        <div class="preview-item">
+          <div class="label">HX Type</div>
+          <div class="value" id="prev_type">—</div>
+        </div>
+        <div class="preview-item">
+          <div class="label">Bare Module Cost</div>
+          <div class="value" id="prev_bmc">—</div>
+        </div>
+        <div class="preview-item">
+          <div class="label">TCI (est.)</div>
+          <div class="value" id="prev_tci">—</div>
+        </div>
+        <div class="preview-item">
+          <div class="label">Annual Energy</div>
+          <div class="value" id="prev_energy">—</div>
+        </div>
+        <div class="preview-item">
+          <div class="label">Annual Savings</div>
+          <div class="value" id="prev_savings">—</div>
+        </div>
+        <div class="preview-item">
+          <div class="label">Simple Payback (est.)</div>
+          <div class="value" id="prev_payback">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Methodology Description -->
+    <div class="preview-panel">
+      <h3>Costing Methodology</h3>
+      <table class="data-table">
+        <thead>
+          <tr><th>Parameter</th><th>Formula / Value</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Bare Module Factor</td><td>3.291 (Turton et al.)</td></tr>
+          <tr><td>Bare Module Cost</td><td>Purchase Cost × 3.291</td></tr>
+          <tr><td>FCI</td><td>Bare Module Cost + Contingency</td></tr>
+          <tr><td>TCI</td><td>FCI + Working Capital</td></tr>
+          <tr><td>Annual Energy</td><td>Heat Duty (kW) × Operating Hours</td></tr>
+          <tr><td>Annual Savings</td><td>Annual Energy × Utility Cost</td></tr>
+          <tr><td>Maintenance</td><td>TCI × Maintenance %</td></tr>
+          <tr><td>Net Annual Benefit</td><td>Annual Savings − Maintenance</td></tr>
+          <tr><td>NPV</td><td>numpy-financial npv(rate, cashflows)</td></tr>
+          <tr><td>IRR</td><td>numpy-financial irr(cashflows)</td></tr>
+          <tr><td>Simple Payback</td><td>TCI / Net Annual Benefit</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
